@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name = "viewport" content = "width=device-width">
+        <title>Catch the Ball</title>
+        <style>
+            :root{
+                --primary: #F45866;
+                --ballSuccess:#2ecc71;
+                --ballSuccess2:#27ae60;
+                --ballDanger: #F45866;
+            }
+            body{
+                height:100%;
+                align-content:space-around;
+                background-color: #090909;
+                color: #ffffff;
+                display:grid;
+                justify-content: center;
+            }
+            canvas{
+                background-color: #101010;
+                margin-left: 20px;
+            }
+            #game-title{
+                font-family: "Arial Black",sans-serif;
+                text-align: center;
+                letter-spacing: 4px;
+                color: var(--primary);
+                margin-bottom: 0;
+            }
+            #msg-unsupport h2{
+                text-align:center;
+                font-weight:normal;
+                letter-spacing: 2px;
+                border: 3px solid var(--primary);
+                background-color: var(--primary);
+                padding: 100px;
+                line-height: 40px;
+                width: 60%;
+                margin: 40px auto;
+            }  
+        </style>
+    </head>
+    <body>
+        <div style="font-family: K2D; font-weight: 400;"></div>
+        <h1 id="game-title">CATCH THE BALL</h1>
+        <p>Try to stop the ball inside white circle,click to stop</p>
+        <canvas class="canvas" width="300" height="450"></canvas>
+        <div id="msg-unsupport" style="display:none;">
+            <h2>You are using outdated browser version. Please upgrade your browser to play the game!.</h2>
+        </div>
+        <script>
+            var canvas = document.querySelector(".canvas");
+            var ctx = canvas.getContext("2d");
+            var ball;
+            var clrDefault = "#dedede";
+            var clrSuccess = "#2ecc71";
+            var clrDanger = "#e74c3c";
+            (function setup()
+            {
+               ball = new Ball();
+               window.setInterval( () => {
+                   ctx.clearRect(0,0, canvas.width, canvas.height);
+                   ball.draw();
+                   ball.update();
+               }, 0.5); //0.5
+            } () );
+            window.addEventListener('click',((evt) =>{
+                //console.log('clicked');
+                ball.check();
+            }));
+            function Ball(){
+                this.size = 30;
+                this.x = canvas.width/2;
+                this.y = canvas.height/2;
+                this.offset = 50;
+                this.jump = 3;
+                this.dir = 'down';
+                this.moving = true;
+                this.color = "#dedede";
+                this.draw = function() {
+                    ctx.beginPath();
+                    ctx.arc(canvas.width/2, canvas.height/2, this.size, 0, 2 * Math.PI);
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y ,this.size, 0, 2 * Math.PI);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+                this.update = function(){
+                    if(this.moving){
+                        this.color = clrDefault;
+                        if(this.y+this.size >= canvas.height-this.offset && this.y+this.size <= canvas.height-this.offset+(this.jump+2)){
+                            this.dir = "up";
+                        }
+                        else if(this.y >= 1+this.size+this.offset && this.y <= 1+this.size+this.offset+(this.jump+2)){
+                            this.dir = "down";
+                        }
+                        if(this.dir == "down")
+                        this.y += this.jump;
+                        else
+                        this.y -= this.jump;
+                    }
+                }
+                this.check = function(){
+                    this.moving = !this.moving;
+                    if(this.y+this.size >= (canvas.height/2-this.size) && this.y-this.size <= (canvas.height/2+this.size)){
+                        this.color = "#2ecc71";
+                        this.draw();
+                        //console.log("you win");
+                    } else {
+                        this.color = "#e74c3c";
+                        this.draw();
+                        //console.log("you lose")''
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
